@@ -3,11 +3,13 @@ package com.webflux.prac.controller;
 import com.webflux.prac.domain.Customer;
 import com.webflux.prac.repository.CustomerRepository;
 import org.springframework.http.MediaType;
+import org.springframework.http.codec.ServerSentEvent;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import reactor.core.publisher.Sinks;
 
 import java.time.Duration;
 
@@ -17,8 +19,17 @@ public class CustomerController {
 
     private final CustomerRepository customerRepository;
 
+    private final Sinks.Many<Customer> sink;
+
+    /*
+      sink : A 요청 : a stream
+             B 요청 : b stream
+             Flux.merge -> sink ( stream을 합쳐줌)
+     */
+
     public CustomerController(CustomerRepository customerRepository){
         this.customerRepository = customerRepository;
+        sink = Sinks.many().multicast().onBackpressureBuffer();
     }
 
     @GetMapping("/customer")
@@ -44,5 +55,10 @@ public class CustomerController {
     @GetMapping(value = "/customer/sse", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public Flux<Customer> findAllSSE(){
         return customerRepository.findAll().delayElements(Duration.ofSeconds(1)).log();
+    }
+
+    @GetMapping(value = "/customer/ssesink")
+    public Flux<ServerSentEvent<Customer>> findAllSSESink(){ // serverSentEvent : 자동으로 produces = MediaType.TEXT_EVENT_STREAM_VALUE 생성
+        return sink.asFlux().map( c -> ServerSentEvent.builder(c).build());
     }
 }
