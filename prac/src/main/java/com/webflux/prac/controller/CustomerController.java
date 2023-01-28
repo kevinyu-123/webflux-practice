@@ -6,6 +6,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.codec.ServerSentEvent;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -59,6 +60,16 @@ public class CustomerController {
 
     @GetMapping(value = "/customer/ssesink")
     public Flux<ServerSentEvent<Customer>> findAllSSESink(){ // serverSentEvent : 자동으로 produces = MediaType.TEXT_EVENT_STREAM_VALUE 생성
-        return sink.asFlux().map( c -> ServerSentEvent.builder(c).build());
+        return sink.asFlux().map( c -> ServerSentEvent.builder(c).build()).doOnCancel(()->{
+            sink.asFlux().blockLast(); // blockLast() : 중간에 요청을 멈춰도 다시 실행될 수 있도록 해줌
+        });
     }
+
+    @PostMapping("/customer")
+    public Mono<Customer> saveTestData(){  //db에 테스트 데이터 넣기
+        return customerRepository.save(new Customer("kevin","yu")).doOnNext( c -> {
+           sink.tryEmitNext(c);
+        });
+    }
+
 }
