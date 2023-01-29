@@ -67,9 +67,7 @@ public class CustomerController {
 
     @PostMapping("/customer")
     public Mono<Customer> saveTestData(){  //db에 테스트 데이터 넣기
-        return customerRepository.save(new Customer("kevin","yu")).doOnNext( c -> {
-           sink.tryEmitNext(c);
-        });
+        return customerRepository.save(new Customer("kevin","yu")).doOnNext(sink::tryEmitNext);
     }
 
 }
