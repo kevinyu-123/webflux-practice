@@ -15,7 +15,7 @@ import java.util.function.Function;
 
 
 @RestController
-public class CustomerController {
+public class TestController {
 
     private final CustomerRepository customerRepository;
 
@@ -28,7 +28,7 @@ public class CustomerController {
      */
 
 
-    public CustomerController(CustomerRepository customerRepository){
+    public TestController(CustomerRepository customerRepository){
         this.customerRepository = customerRepository;
         sink = Sinks.many().multicast().onBackpressureBuffer();
     }
@@ -123,13 +123,24 @@ public class CustomerController {
 
         return Flux.fromIterable(List.of("apple","orange","mango"))
                 .transform(filterData)
-                .switchIfEmpty(Flux.just("pineapple","grapefruit"))
+                .switchIfEmpty(Flux.just("pineapple","grapefruit")) // switch to new data set when values are empty
                     .transform(filterData)
                 .log();
     }
 
+    @GetMapping("/concat")
+    public Flux<String> fluxConcat(){
+        var f = Flux.just("mango","banana");
+        var a = Flux.just("tomato","pineapple");
+        return Flux.concat(f,a);
+    }
 
-
+    @GetMapping("/concatwith")
+    public Flux<String> fluxConcatWith(){
+        var f = Flux.just("mango","banana");
+        var a = Flux.just("tomato","pineapple");
+        return f.concatWith(a);
+    }
 
 
 }

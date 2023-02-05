@@ -5,12 +5,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import reactor.test.StepVerifier;
 
-import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest
-class CustomerControllerTest {
+class TestControllerTest {
 
     @Autowired
-    CustomerController controller;
+    TestController controller;
     @Test
     void fluxTransformDefaultIfEmpty() {
         var fluxUnit  = controller.FluxTransformDefaultIfEmpty(6);
@@ -27,5 +26,20 @@ class CustomerControllerTest {
         StepVerifier.create(fluxUnit)
                 .expectNext("pineapple","grapefruit")
                 .verifyComplete();
+    }
+
+    @Test
+    void fluxConcat() {
+
+        var result = controller.fluxConcat().log();
+
+        StepVerifier.create(result).expectNext("mango","banana","tomato","pineapple").verifyComplete();
+    }
+
+    @Test
+    void fluxConcatWith() {
+        var result = controller.fluxConcatWith().log();
+
+        StepVerifier.create(result).expectNext("mango","banana","tomato","pineapple").verifyComplete();
     }
 }
