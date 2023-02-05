@@ -4,16 +4,14 @@ import com.webflux.prac.domain.Customer;
 import com.webflux.prac.repository.CustomerRepository;
 import org.springframework.http.MediaType;
 import org.springframework.http.codec.ServerSentEvent;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.publisher.Sinks;
 
 import java.time.Duration;
 import java.util.List;
+import java.util.function.Function;
 
 
 @RestController
@@ -100,9 +98,35 @@ public class CustomerController {
                 .log();
     }
 
+    @GetMapping("/transform")
+    public Flux<String> FluxTransform(@RequestParam Integer num){
+        Function<Flux<String>,Flux<String>> filterData = data -> data.filter(s -> s.length() > num);
 
+        return Flux.fromIterable(List.of("apple","orange","mango"))
+                .transform(filterData)
+                .log();
+    }
 
+    @GetMapping("/transform-default")
+    public Flux<String> FluxTransformDefaultIfEmpty(@RequestParam Integer num){
+        Function<Flux<String>,Flux<String>> filterData = data -> data.filter(s -> s.length() > num);
 
+        return Flux.fromIterable(List.of("apple","orange","mango"))
+                .transform(filterData)
+                .defaultIfEmpty("default") // when data is empty, pass default value
+                .log();
+    }
+
+    @GetMapping("/transform-switch")
+    public Flux<String> FluxTransformSwitch(@RequestParam Integer num){
+        Function<Flux<String>,Flux<String>> filterData = data -> data.filter(s -> s.length() > num);
+
+        return Flux.fromIterable(List.of("apple","orange","mango"))
+                .transform(filterData)
+                .switchIfEmpty(Flux.just("pineapple","grapefruit"))
+                    .transform(filterData)
+                .log();
+    }
 
 
 
