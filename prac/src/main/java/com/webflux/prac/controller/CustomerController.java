@@ -13,6 +13,7 @@ import reactor.core.publisher.Mono;
 import reactor.core.publisher.Sinks;
 
 import java.time.Duration;
+import java.util.List;
 
 
 @RestController
@@ -28,6 +29,7 @@ public class CustomerController {
              Flux.merge -> sink ( stream을 합쳐줌)
      */
 
+
     public CustomerController(CustomerRepository customerRepository){
         this.customerRepository = customerRepository;
         sink = Sinks.many().multicast().onBackpressureBuffer();
@@ -37,6 +39,7 @@ public class CustomerController {
     public Flux<Customer> findAllCustomer(){
         return customerRepository.findAll().log();
     }
+
 
     @GetMapping("/test")
     public Flux<Integer> test(){
@@ -69,5 +72,40 @@ public class CustomerController {
     public Mono<Customer> saveTestData(){  //db에 테스트 데이터 넣기
         return customerRepository.save(new Customer("kevin","yu")).doOnNext(sink::tryEmitNext);
     }
+
+    @GetMapping("/filter")
+    public Flux<Integer> filterTest(){
+        return Flux.fromIterable(List.of(1,2,3,4,5,6,7)).filter( s -> s > 3).log();
+    }
+
+    @GetMapping("/filter-map")
+    public Flux<String> filterWithMapTest(){
+        return Flux.fromIterable(List.of("abc","be","casdfadsf","dweee"))
+                .filter( s -> s.length() > 2)
+                .map(String::toUpperCase)
+                .log();
+    }
+
+    @GetMapping("/flatmap")
+    public Flux<String> fruitsFluxFlatmap(){
+        return Flux.fromIterable(List.of("orange","mango","apple"))
+                .flatMap(s -> Flux.just(s.split(" ")))
+                .log();
+    }
+
+    @GetMapping("/to-flux")
+    public Flux<String> FlatmapMany(){  // mono to flux
+        return Mono.just("Apple")
+                .flatMapMany(s -> Flux.just(s.split("")))
+                .log();
+    }
+
+
+
+
+
+
+
+
 
 }
