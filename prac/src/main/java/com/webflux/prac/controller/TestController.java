@@ -142,5 +142,32 @@ public class TestController {
         return f.concatWith(a);
     }
 
+    @GetMapping("/zip")
+    public Flux<String> zipExample(){
+        var fruits = Flux.just("mango","orange");
+        var veggis = Flux.just("tomato", "lemon");
+
+        return Flux.zip(fruits,veggis,(first, second) -> first + second).log();
+
+    }
+
+    @GetMapping("/zipwith")
+    public  Flux<String> zipwithEx(){
+        var fruits = Flux.just("mango","orange");
+        var veggis = Flux.just("tomato", "lemon");
+
+        return fruits.zipWith(veggis, (f,s)-> f+s).log();
+    }
+
+
+
+
+
+
+
+
+
+
+
 
 }

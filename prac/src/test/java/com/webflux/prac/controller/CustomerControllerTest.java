@@ -42,4 +42,18 @@ class TestControllerTest {
 
         StepVerifier.create(result).expectNext("mango","banana","tomato","pineapple").verifyComplete();
     }
+
+    @Test
+    void zipExample() {
+        var result = controller.zipExample().log();
+
+        StepVerifier.create(result).expectNext("mangotomato","orangelemon").verifyComplete();
+    }
+
+    @Test
+    void zipwithEx() {
+        var result = controller.zipwithEx().log();
+
+        StepVerifier.create(result).expectNext("mangotomato","orangelemon").verifyComplete();
+    }
 }
