@@ -159,10 +159,22 @@ public class TestController {
         return fruits.zipWith(veggis, (f,s)-> f+s).log();
     }
 
+    @GetMapping("/zipwith-tuple")
+    public  Flux<String> zipwithTupleEx(){
+        var fruits = Flux.just("mango","orange");
+        var veggis = Flux.just("tomato", "lemon");
+        var more = Flux.just("potato","beans");
 
+        return Flux.zip(fruits, veggis, more).map(objects -> objects.getT1() + objects.getT2() + objects.getT3()).log();
+    }
 
+    @GetMapping("/zipwith-mono")
+    public  Mono<String> zipwithExMono(){
+        var fruits = Mono.just("mango");
+        var veggis = Mono.just("tomato");
 
-
+        return fruits.zipWith(veggis,(f,s) -> f+s).log();
+    }
 
 
 

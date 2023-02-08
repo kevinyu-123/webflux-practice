@@ -56,4 +56,18 @@ class TestControllerTest {
 
         StepVerifier.create(result).expectNext("mangotomato","orangelemon").verifyComplete();
     }
+
+    @Test
+    void zipwithTupleEx() {
+        var result = controller.zipwithTupleEx();
+
+        StepVerifier.create(result).expectNext("mangotomatopotato","orangelemonbeans").verifyComplete();
+    }
+
+    @Test
+    void zipwithExMono() {
+        var result = controller.zipwithExMono().log();
+
+        StepVerifier.create(result).expectNext("mangotomato").verifyComplete();
+    }
 }
