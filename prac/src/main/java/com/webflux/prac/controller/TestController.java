@@ -176,6 +176,18 @@ public class TestController {
         return fruits.zipWith(veggis,(f,s) -> f+s).log();
     }
 
+    @GetMapping("/do-on")
+    public Flux<String> doOnExample(int number){ // 다양한 doOn operator들이 존재, 여러방면으로 사용가능하다
+        return Flux.fromIterable(List.of("mango","orange","banana"))
+                .filter(s -> s.length() > number)
+                .doOnNext(s -> {
+                    System.out.println(" s = "+ s);
+                })
+                .doOnSubscribe( subscription -> {
+                    System.out.println("subscription :"+ subscription.toString());
+                })
+                .doOnComplete(() -> System.out.println("complete !"));
+    }
 
 
 

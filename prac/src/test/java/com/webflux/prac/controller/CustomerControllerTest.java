@@ -70,4 +70,10 @@ class TestControllerTest {
 
         StepVerifier.create(result).expectNext("mangotomato").verifyComplete();
     }
+
+    @Test
+    void doOnExample() {
+        var result = controller.doOnExample(5).log();
+        StepVerifier.create(result).expectNext("orange","banana").verifyComplete();
+    }
 }
