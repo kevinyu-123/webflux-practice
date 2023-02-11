@@ -10,6 +10,10 @@ import java.util.List;
 @Service
 public class BookInfoService {
 
+    /**
+     * 가데이터 설정
+     * @return
+     */
     public Flux<BookInfo> getBooks(){
         var books = List.of(
                 new BookInfo(1L,"book 1","author 1","123123123"),
@@ -19,6 +23,10 @@ public class BookInfoService {
         return Flux.fromIterable(books);
     }
 
+    /**
+     * 가데이터 설정
+     * @return
+     */
     public Mono<BookInfo> getBookById(long id){
         var book = new BookInfo(id,"book 1","author 1","123123123");
 

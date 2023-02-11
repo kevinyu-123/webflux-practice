@@ -31,4 +31,13 @@ public class BookService {
                 .log();
     }
 
+
+    public Mono<Book> getBookById(long bookId){
+        var book = bookInfoService.getBookById(bookId); //mono 타입
+        var review = reviewService.getReviews(bookId).collectList(); //flux 타입
+
+        return book.zipWith(review,(b,r) -> new Book(b,r));
+    }
+
+
 }
