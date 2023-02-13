@@ -2,6 +2,7 @@ package com.webflux.prac.service;
 
 import com.webflux.prac.domain.Book;
 import com.webflux.prac.domain.Review;
+import com.webflux.prac.handler.exception.BookException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -27,6 +28,10 @@ public class BookService {
                     Mono<List<Review>> reviews = reviewService.getReviews(bookInfo.getBookId()).collectList();
                     return reviews
                             .map(review -> new Book(bookInfo,review));
+                })
+                .onErrorMap(throwable -> {
+                    log.error("execption is : " + throwable);
+                    return new BookException("exception occured while fetching Books");
                 })
                 .log();
     }
