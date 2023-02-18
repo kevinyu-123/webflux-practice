@@ -76,4 +76,21 @@ class TestControllerTest {
         var result = controller.doOnExample(5).log();
         StepVerifier.create(result).expectNext("orange","banana").verifyComplete();
     }
+
+    @Test
+    void onErrorContinue() {
+        var result = controller.onErrorContinue().log();
+
+        StepVerifier.create(result).expectNext("APPLE","ORANGE").verifyComplete();
+
+    }
+
+    @Test
+    void onErrorMap() {
+        var result = controller.onErrorMap().log();
+
+        StepVerifier.create(result).expectNext("APPLE")
+                .expectError(IllegalStateException.class)
+                .verify();
+    }
 }

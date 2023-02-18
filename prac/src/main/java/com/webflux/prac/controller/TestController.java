@@ -189,6 +189,42 @@ public class TestController {
                 .doOnComplete(() -> System.out.println("complete !"));
     }
 
+    @GetMapping("/onErrorReturn")
+    public Flux<String> onErrorReturn(){
+        return Flux.just("apple", "mango")
+                .concatWith(Flux.error(
+                        new RuntimeException("exception here")
+                ))
+                .onErrorReturn("orange"); //에러 발생시 orange를 반환
+    }
+
+    @GetMapping("/onErrorContinue")
+    public Flux<String> onErrorContinue(){
+        return Flux.just("apple", "mango","orange")
+                .map(s -> {
+                    if(s.equalsIgnoreCase("mango"))
+                        throw new RuntimeException("exception occured");
+                    return s.toUpperCase();
+                })
+                .onErrorContinue((e,f)->{
+                    System.out.println("e = "+ e);
+                    System.out.println("f = " + f);
+                }); //에러 발생시 orange를 반환
+    }
+
+    @GetMapping("/onErrorMap")
+    public Flux<String> onErrorMap(){
+        return Flux.just("apple", "mango","orange")
+                .map(s -> {
+                    if(s.equalsIgnoreCase("mango"))
+                        throw new RuntimeException("exception occured");
+                    return s.toUpperCase();
+                })
+                .onErrorMap( throwable -> {
+                    System.out.println("error :" + throwable);
+                    return new IllegalStateException("this error is from errorMap");
+                });
+    }
 
 
 
