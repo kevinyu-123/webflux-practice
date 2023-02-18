@@ -93,4 +93,13 @@ class TestControllerTest {
                 .expectError(IllegalStateException.class)
                 .verify();
     }
+
+    @Test
+    void doOnError() {
+        var result = controller.doOnError().log();
+
+        StepVerifier.create(result).expectNext("APPLE")
+                .expectError(RuntimeException.class)
+                .verify();
+    }
 }

@@ -226,7 +226,18 @@ public class TestController {
                 });
     }
 
-
+    @GetMapping("/doOnError")
+    public Flux<String> doOnError(){
+        return Flux.just("apple", "mango","orange")
+                .map(s -> {
+                    if(s.equalsIgnoreCase("mango"))
+                        throw new RuntimeException("exception occured");
+                    return s.toUpperCase();
+                })
+                .doOnError( throwable -> {
+                    System.out.println("error :" + throwable);
+                });
+    }
 
 
 
